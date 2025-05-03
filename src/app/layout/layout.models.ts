@@ -15,4 +15,9 @@ export const sidenavMenu: IMenu[] = [
     title: 'games',
     icon: 'sports_esports',
   },
+  {
+    link: '/login',
+    title: 'log out',
+    icon: 'logout',
+  }
 ];

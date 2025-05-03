@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 
 export interface IUser {
   id: number;
@@ -26,7 +26,7 @@ export class HttpService {
       .subscribe();
   }
 
-  private getUserHttp(): Observable<IUser> {
+  private getUserHttp(): Observable<IUser | null> {
     return this.http.get<IUser>(`${this.baseUrl}/users/${this.baseID}`);
   }
 
@@ -36,5 +36,12 @@ export class HttpService {
 
   updateUser(user: IUser): Observable<IUser> {
     return this.http.put<IUser>(`${this.baseUrl}/users/${this.baseID}`, user);
+  }
+
+  hasUsers(): Observable<boolean> {
+    return this.http.get<IUser[]>(`${this.baseUrl}/users`).pipe(
+      map(users => users.length > 0),
+      tap((val) => console.log(val))
+    );
   }
 }
