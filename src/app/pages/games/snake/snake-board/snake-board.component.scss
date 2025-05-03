@@ -1,0 +1,40 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.burger {
+  position: relative;
+  &::before {
+    position: absolute;
+    content: "🍔";
+    font-size: 20px;
+  }
+}
+
+.cocos {
+  position: relative;
+  &::before {
+    position: absolute;
+    content: "🥥";
+    font-size: 20px;
+  }
+}
+
+.red {
+  background-color: red;
+}
+
+.blue {
+  background-color: blue;
+}
+
+.black {
+  background-color: black;
+}
+
+.green {
+  background-color: green;
+}

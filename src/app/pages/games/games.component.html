@@ -1,0 +1,12 @@
+<div class="p-4 grid grid-cols-10 grid-rows-6 gap-y-32 gap-x-6 h-full">
+  @for (gameItem of gameItems; track gameItem) {
+  <app-card
+    class="cursor-pointer hover:scale-110 transition-transform"
+    [routerLink]="gameItem.reliese ? gameItem.link : '/games'"
+    [title]="gameItem.title"
+    [ngClass]="gameItem.class"
+    [reliese]="gameItem.reliese"
+    [img]="`assets/img/logo_${gameItem.img}.png`"
+  ></app-card>
+  }
+</div>

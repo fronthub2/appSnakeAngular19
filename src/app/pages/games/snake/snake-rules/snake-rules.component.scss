@@ -1,0 +1,13 @@
+:host {
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  ::ng-deep {
+    .mat-mdc-radio-group {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+  }
+}

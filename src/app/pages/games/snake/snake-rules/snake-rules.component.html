@@ -1,0 +1,37 @@
+<form
+  [formGroup]="form"
+  class="flex flex-col items-center gap-5 container mx-auto"
+>
+  @for (setting of settings; track $index) {
+  <label>
+    {{ setting.label }}: 
+    @switch (setting.name) { 
+      @case ('speed') {
+        {{ speed$ | async }} 
+      } 
+      @case ('color') { 
+        {{ color$ | async }} 
+      } 
+      @case
+        ('food') { {{ food$ | async }} 
+      } 
+    }
+  </label>
+
+  <mat-radio-group [formControlName]="setting.name">
+    @for (option of setting.value; track $index) { 
+      @if (isFood(option)) {
+          <mat-radio-button class="radio-button" [value]="option.name">
+            {{ option.icon }} {{ option.name }}
+          </mat-radio-button>
+      } @else {
+          <mat-radio-button class="radio-button" [value]="option">
+            {{ option }}
+          </mat-radio-button>
+      } 
+  }
+  </mat-radio-group>
+  }
+
+  <button mat-flat-button routerLink="/games/snake-board">Start</button>
+</form>

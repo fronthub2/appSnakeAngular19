@@ -1,1 +1,27 @@
-/* You can add global styles to this file, and also import other style files */
+@use "@angular/material" as mat;
+@use "./styles/m3colors.scss" as m3;
+
+@import "tailwindcss";
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: m3.$primary-palette,
+        tertiary: m3.$tertiary-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

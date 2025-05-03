@@ -1,0 +1,15 @@
+<mat-drawer-container class="drawer-container">
+  <mat-drawer mode="side" opened class="drawer">
+    <div class="h-full flex flex-col gap-4 justify-center">
+      @for (menuItem of menuItems; track menuItem) {
+      <a [routerLink]="menuItem.link" routerLinkActive="active" mat-button>
+        <mat-icon>{{ menuItem.icon }}</mat-icon>
+        {{ menuItem.title }}
+      </a>
+      }
+    </div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>
