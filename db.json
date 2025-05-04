@@ -2,11 +2,9 @@
   "users": [
     {
       "id": "1",
-      "name": "test",
-      "avatarId": 0,
-      "score": [
-        1
-      ]
+      "name": "denis",
+      "avatarId": 1,
+      "score": []
     }
   ]
 }

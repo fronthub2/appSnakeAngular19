@@ -22,15 +22,13 @@ export const loginGuard: CanActivateFn = () => {
   const httpService = inject(HttpService);
   const router = inject(Router);
 
-  return confirm('Вы уверены? Ваши данные будут удалены')
-
-  // return httpService.hasUsers().pipe(
-  //   map((hasUsers) => {
-  //     if (hasUsers) {
-  //       return router.createUrlTree(['']);
-  //     }
-
-  //     return true;
-  //   })
-  // );
+  return httpService.hasUsers().pipe(
+    map((hasUsers) => {
+      if (hasUsers) {
+        return router.createUrlTree(['']);
+      }
+      
+      return true;
+    })
+  );
 };
