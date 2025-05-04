@@ -2,10 +2,19 @@
   <mat-drawer mode="side" opened class="drawer">
     <div class="h-full flex flex-col gap-4 justify-center">
       @for (menuItem of menuItems; track menuItem) {
-      <a [routerLink]="menuItem.link" routerLinkActive="active" mat-button>
-        <mat-icon>{{ menuItem.icon }}</mat-icon>
-        {{ menuItem.title }}
-      </a>
+      
+      @if (menuItem.title === 'log out') {
+        <a (click)="logOut()" mat-button>
+          <mat-icon>{{ menuItem.icon }}</mat-icon>
+          {{ menuItem.title }}
+        </a>
+      } @else {
+          <a [routerLink]="menuItem.link" routerLinkActive="active" mat-button>
+          <mat-icon>{{ menuItem.icon }}</mat-icon>
+          {{ menuItem.title }}
+          </a>
+        } 
+        
       }
     </div>
   </mat-drawer>

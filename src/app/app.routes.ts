@@ -1,18 +1,14 @@
 import { Routes } from '@angular/router';
+import { layoutGuard } from './auth.guard';
 import { LoginComponent } from './auth/login/login.component';
 import { LayoutComponent } from './layout/layout.component';
 import { gameRoutes } from './pages/games/games.routes';
-import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
   {
-    path: 'login',
-    component: LoginComponent,
-  },
-  {
     path: '',
+    canActivate: [layoutGuard],
     component: LayoutComponent,
-    canActivate: [authGuard],
     children: [
       {
         path: '',
@@ -28,5 +24,10 @@ export const routes: Routes = [
       },
       ...gameRoutes,
     ],
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+    // canActivate: [loginGuard],
   },
 ];

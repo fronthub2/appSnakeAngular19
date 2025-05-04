@@ -1,6 +1,12 @@
 <div class="flex flex-col gap-4 card shadow-xl w-96 p-6">
   <mat-form-field appearance="outline">
-    <input class="w-full" type="email" matInput placeholder="Write name" />
+    <input
+      [(ngModel)]="name"
+      class="w-full"
+      type="email"
+      matInput
+      placeholder="Write name"
+    />
   </mat-form-field>
-  <button mat-flat-button>Log in</button>
+  <button (click)="addUser()" mat-flat-button>Log in</button>
 </div>

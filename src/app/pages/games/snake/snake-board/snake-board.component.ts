@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import {
   combineLatest,
+  filter,
   interval,
   Observable,
   of,
@@ -20,6 +21,7 @@ import {
 import { HttpService, IUser } from '../../../../services/http.service';
 import { SnakeRulesService } from '../snake-rules.service';
 import { SnakeService } from '../snake.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-snake-board',
@@ -31,8 +33,8 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
   private gameService = inject(SnakeService);
   private settingService = inject(SnakeRulesService);
   private httpService = inject(HttpService);
-  // private router = inject(Router);
-  // private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   private destroy$ = new Subject<void>();
   private gameOver$ = new Subject<void>();
@@ -99,15 +101,19 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
           this.updateBoard();
 
           if (gameOver) {
-            this.updateScore();
-            this.gameOver$.next();
-            // this.router.navigate(['/games'], { relativeTo: this.route });
+            this.handleGameOver();
           }
         }),
         takeUntil(this.gameOver$),
         takeUntil(this.destroy$)
       )
       .subscribe();
+  }
+
+  private handleGameOver() {
+    this.updateScore();
+    this.gameOver$.next();
+    this.router.navigate(['/games'], { relativeTo: this.route });
   }
 
   private updateBoard(): void {
