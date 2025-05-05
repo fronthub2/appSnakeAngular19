@@ -44,7 +44,6 @@ export class SnakeService {
   }
 
   getGameOver(): Observable<boolean> {
-    console.log('over');
     return this.gameOver$.asObservable();
   }
 

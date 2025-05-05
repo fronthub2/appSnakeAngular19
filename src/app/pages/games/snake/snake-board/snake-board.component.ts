@@ -6,12 +6,14 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import {
   combineLatest,
   interval,
   Observable,
   Subject,
+  take,
   takeUntil,
   tap,
   withLatestFrom,
@@ -20,12 +22,13 @@ import {
   IUser,
   LocalStorageService,
 } from '../../../../services/localstorage.service';
+import { DialogComponent } from '../../../../shared/dialog/dialog.component';
 import { SnakeRulesService } from '../snake-rules.service';
 import { SnakeService } from '../snake.service';
 
 @Component({
   selector: 'app-snake-board',
-  imports: [CommonModule],
+  imports: [CommonModule, MatDialogModule],
   templateUrl: './snake-board.component.html',
   styleUrl: './snake-board.component.scss',
 })
@@ -34,19 +37,21 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
   private rulesService = inject(SnakeRulesService);
   private lsService = inject(LocalStorageService);
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  private dialog = inject(MatDialog);
 
   private destroy$ = new Subject<void>();
   private gameOver$ = new Subject<void>();
+  private isGameRunning = false;
 
   private user: IUser | null = this.lsService.getUser();
 
+  countdown: number | null = 3;
   over$: Observable<boolean> = this.gameService.getGameOver();
   score$: Observable<number> = this.gameService.getScore();
 
-  speed!: string;
-  color!: string;
-  food!: string;
+  speed: string = '1';
+  color: string = 'green';
+  food: string = 'apple';
 
   board: number[][] = Array(20)
     .fill(0)
@@ -55,7 +60,7 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.gameService.resetGame();
     this.getRules();
-    this.startGame();
+    this.startCountdown();
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -76,6 +81,26 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
     }
   }
 
+  openDialog(): void {
+    this.score$.pipe(take(1)).subscribe((score) => {
+      const dialogRef = this.dialog.open(DialogComponent, {
+        data: { score },
+      });
+
+      dialogRef
+        .afterClosed()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((result: boolean | undefined) => {
+          if (result) {
+            this.gameService.resetGame();
+            this.startCountdown();
+          } else {
+            this.router.navigate(['/games']);
+          }
+        });
+    });
+  }
+
   private getRules(): void {
     combineLatest([
       this.rulesService.getSpeed(),
@@ -84,17 +109,40 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
     ])
       .pipe(
         tap(([speed, color, food]) => {
-          this.speed = speed;
-          this.color = color;
-          this.food = food;
+          this.speed = speed ?? '1';
+          this.color = color ?? 'green';
+          this.food = food ?? 'apple';
         }),
         takeUntil(this.destroy$)
       )
       .subscribe();
   }
 
+  private startCountdown(): void {
+    if (this.isGameRunning) return;
+    this.isGameRunning = true;
+
+    this.countdown = 3;
+    interval(1000)
+      .pipe(
+        take(4),
+        tap((tick) => {
+          this.countdown = 3 - tick;
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        complete: () => {
+          this.countdown = null;
+          this.startGame();
+        },
+      });
+  }
+
   private startGame(): void {
-    interval(Number(this.speed) * 1000)
+    const speedMs = Number(this.speed) * 1000;
+
+    interval(speedMs)
       .pipe(
         withLatestFrom(this.over$),
         tap(([_, gameOver]) => {
@@ -102,7 +150,10 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
           this.updateBoard();
 
           if (gameOver) {
-            this.handleGameOver();
+            this.updateScore();
+            this.gameOver$.next();
+            this.isGameRunning = false;
+            this.openDialog();
           }
         }),
         takeUntil(this.gameOver$),
@@ -111,16 +162,12 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  private handleGameOver() {
-    this.updateScore();
-    this.gameOver$.next();
-    this.router.navigate(['/games'], { relativeTo: this.route });
-  }
-
   private updateBoard(): void {
-    this.board = Array(20)
-      .fill(0)
-      .map(() => Array(20).fill(0));
+    for (let y = 0; y < 20; y++) {
+      for (let x = 0; x < 20; x++) {
+        this.board[y][x] = 0;
+      }
+    }
 
     this.gameService.getSnake().forEach((segment) => {
       this.board[segment.y][segment.x] = 1;
@@ -133,14 +180,16 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
   private updateScore(): void {
     this.score$
       .pipe(
+        take(1),
         tap((score) => {
           if (score === 0 || !this.user) return;
-
-          this.user.score.push(score);
-          this.lsService.setUser(this.user);
-          console.log(score);
-        }),
-        takeUntil(this.destroy$)
+          try {
+            this.user.score.push(score);
+            this.lsService.setUser(this.user);
+          } catch (e) {
+            console.error('Ошибка с сохранением score>> ', e);
+          }
+        })
       )
       .subscribe();
   }
