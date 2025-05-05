@@ -1,1 +1,6 @@
-<p>profile works!</p>
+<div
+  class="rounded-full w-16 h-16 border-2 p-3 border-[#584fbd] flex justify-center items-center text-3xl"
+>
+  <h2 class="m-0">{{ user!.name | sliceName }}</h2>
+</div>
+<p>Максимум очков: {{ user!.score | maxScore }}</p>

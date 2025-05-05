@@ -8,7 +8,7 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { HttpService } from '../services/http.service';
+import { LocalStorageService } from '../services/localstorage.service';
 import { sidenavMenu } from './layout.models';
 
 @Component({
@@ -25,13 +25,13 @@ import { sidenavMenu } from './layout.models';
   styleUrl: './layout.component.scss',
 })
 export class LayoutComponent {
-  private httpService = inject(HttpService);
+  private localStorage = inject(LocalStorageService);
   private router = inject(Router);
 
   menuItems = sidenavMenu;
 
   logOut() {
-    this.httpService.deleteUser().subscribe();
+    this.localStorage.deleteUser();
     this.router.navigate(['/login']);
   }
 }

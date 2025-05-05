@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { layoutGuard, loginGuard } from './auth.guard';
+import { layoutGuard } from './auth.guard';
 import { LoginComponent } from './auth/login/login.component';
 import { LayoutComponent } from './layout/layout.component';
 import { gameRoutes } from './pages/games/games.routes';
@@ -28,6 +28,5 @@ export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
-    canActivate: [loginGuard],
   },
 ];

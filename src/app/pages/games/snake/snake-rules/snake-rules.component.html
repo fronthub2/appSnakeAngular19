@@ -2,10 +2,10 @@
   [formGroup]="form"
   class="flex flex-col items-center gap-5 container mx-auto"
 >
-  @for (setting of settings; track $index) {
+  @for (settingItem of settingItems; track $index) {
   <label>
-    {{ setting.label }}: 
-    @switch (setting.name) { 
+    {{ settingItem.label }}: 
+    @switch (settingItem.name) { 
       @case ('speed') {
         {{ speed$ | async }} 
       } 
@@ -18,8 +18,8 @@
     }
   </label>
 
-  <mat-radio-group [formControlName]="setting.name">
-    @for (option of setting.value; track $index) { 
+  <mat-radio-group [formControlName]="settingItem.name">
+    @for (option of settingItem.value; track $index) { 
       @if (isFood(option)) {
           <mat-radio-button class="radio-button" [value]="option.name">
             {{ option.icon }} {{ option.name }}

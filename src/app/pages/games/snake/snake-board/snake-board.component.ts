@@ -6,22 +6,22 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   combineLatest,
-  filter,
   interval,
   Observable,
-  of,
   Subject,
-  switchMap,
   takeUntil,
   tap,
   withLatestFrom,
 } from 'rxjs';
-import { HttpService, IUser } from '../../../../services/http.service';
+import {
+  IUser,
+  LocalStorageService,
+} from '../../../../services/localstorage.service';
 import { SnakeRulesService } from '../snake-rules.service';
 import { SnakeService } from '../snake.service';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-snake-board',
@@ -31,15 +31,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class SnakeBoardComponent implements OnInit, OnDestroy {
   private gameService = inject(SnakeService);
-  private settingService = inject(SnakeRulesService);
-  private httpService = inject(HttpService);
+  private rulesService = inject(SnakeRulesService);
+  private lsService = inject(LocalStorageService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   private destroy$ = new Subject<void>();
   private gameOver$ = new Subject<void>();
 
-  user$: Observable<IUser | null> = this.httpService.getUser();
+  private user: IUser | null = this.lsService.getUser();
+
   over$: Observable<boolean> = this.gameService.getGameOver();
   score$: Observable<number> = this.gameService.getScore();
 
@@ -77,9 +78,9 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
 
   private getRules(): void {
     combineLatest([
-      this.settingService.getSpeed(),
-      this.settingService.getColor(),
-      this.settingService.getFood(),
+      this.rulesService.getSpeed(),
+      this.rulesService.getColor(),
+      this.rulesService.getFood(),
     ])
       .pipe(
         tap(([speed, color, food]) => {
@@ -130,13 +131,14 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
   }
 
   private updateScore(): void {
-    combineLatest([this.user$, this.score$])
+    this.score$
       .pipe(
-        switchMap(([user, score]) => {
-          if (!user) return of(null);
-          if (score === 0) return of(null);
-          user.score.push(score);
-          return this.httpService.updateUser(user);
+        tap((score) => {
+          if (score === 0 || !this.user) return;
+
+          this.user.score.push(score);
+          this.lsService.setUser(this.user);
+          console.log(score);
         }),
         takeUntil(this.destroy$)
       )

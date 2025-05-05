@@ -13,24 +13,12 @@ export class SnakeRulesService {
     return this.speed.asObservable();
   }
 
-  setSpeed(speed: string): void {
-    this.speed.next(speed);
-  }
-
   getColor(): Observable<string> {
     return this.color.asObservable();
   }
 
-  setColor(color: string): void {
-    this.color.next(color);
-  }
-
   getFood(): Observable<string> {
     return this.food.asObservable();
-  }
-
-  setFood(food: string): void {
-    this.food.next(food);
   }
 
   updateSetting(speed: string, color: string, food: string): void {

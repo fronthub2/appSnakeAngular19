@@ -16,7 +16,14 @@ import { Item, SnakeRules } from './snake-rules.models';
 
 @Component({
   selector: 'app-snake-rules',
-  imports: [RouterLink, ReactiveFormsModule, FormsModule, MatRadioModule,AsyncPipe,MatButtonModule],
+  imports: [
+    RouterLink,
+    ReactiveFormsModule,
+    FormsModule,
+    MatRadioModule,
+    AsyncPipe,
+    MatButtonModule,
+  ],
   templateUrl: './snake-rules.component.html',
   styleUrl: './snake-rules.component.scss',
 })
@@ -24,17 +31,17 @@ export class SnakeRulesComponent implements OnDestroy {
   private rulesService = inject(SnakeRulesService);
   private destroy$ = new Subject<void>();
 
-  settings: (Item<string> | Item<Food>)[] = SnakeRules;
+  speed$: Observable<string> = this.rulesService.getSpeed();
+  color$: Observable<string> = this.rulesService.getColor();
+  food$: Observable<string> = this.rulesService.getFood();
+
+  settingItems: (Item<string> | Item<Food>)[] = SnakeRules;
 
   form = new FormGroup({
     speed: new FormControl(this.rulesService.speed.value),
     color: new FormControl(this.rulesService.color.value),
     food: new FormControl(this.rulesService.food.value),
   });
-
-  speed$: Observable<string> = this.rulesService.getSpeed();
-  color$: Observable<string> = this.rulesService.getColor();
-  food$: Observable<string> = this.rulesService.getFood();
 
   ngOnInit() {
     this.form.valueChanges
