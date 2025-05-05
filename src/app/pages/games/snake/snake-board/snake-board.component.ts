@@ -16,7 +16,7 @@ import {
   take,
   takeUntil,
   tap,
-  withLatestFrom,
+  withLatestFrom
 } from 'rxjs';
 import {
   IUser,
@@ -41,14 +41,14 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   private gameOver$ = new Subject<void>();
-  private isGameRunning = false;
 
   private user: IUser | null = this.lsService.getUser();
+  private isGameRunning = false;
 
-  countdown: number | null = 3;
   over$: Observable<boolean> = this.gameService.getGameOver();
   score$: Observable<number> = this.gameService.getScore();
 
+  countdown: number | null = 3;
   speed: string = '1';
   color: string = 'green';
   food: string = 'apple';
@@ -82,23 +82,19 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
   }
 
   openDialog(): void {
-    this.score$.pipe(take(1)).subscribe((score) => {
-      const dialogRef = this.dialog.open(DialogComponent, {
-        data: { score },
-      });
+    const dialogRef = this.dialog.open(DialogComponent);
 
-      dialogRef
-        .afterClosed()
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((result: boolean | undefined) => {
-          if (result) {
-            this.gameService.resetGame();
-            this.startCountdown();
-          } else {
-            this.router.navigate(['/games']);
-          }
-        });
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result: boolean) => {
+        if (result) {
+          this.gameService.resetGame();
+          this.startCountdown();
+        } else {
+          this.router.navigate(['/games']);
+        }
+      });
   }
 
   private getRules(): void {
@@ -109,9 +105,9 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
     ])
       .pipe(
         tap(([speed, color, food]) => {
-          this.speed = speed ?? '1';
-          this.color = color ?? 'green';
-          this.food = food ?? 'apple';
+          this.speed = speed;
+          this.color = color;
+          this.food = food;
         }),
         takeUntil(this.destroy$)
       )
@@ -121,8 +117,8 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
   private startCountdown(): void {
     if (this.isGameRunning) return;
     this.isGameRunning = true;
-
     this.countdown = 3;
+    
     interval(1000)
       .pipe(
         take(4),
@@ -195,6 +191,7 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.dialog.closeAll();
     this.destroy$.next();
     this.destroy$.complete();
   }

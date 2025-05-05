@@ -32,6 +32,5 @@ export class LoginComponent {
     };
     this.localStorage.setUser(user);
     this.router.navigate(['']);
-    console.log(this.localStorage.getUser());
   }
 }
