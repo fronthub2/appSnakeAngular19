@@ -67,7 +67,6 @@ export class SnakeService {
         break;
     }
 
-    // Проверка столкновений со стеной
     if (
       head.x < 0 ||
       head.x >= this.boardSize ||
@@ -78,7 +77,6 @@ export class SnakeService {
       return;
     }
 
-    // Проверка столкновения с собой
     if (
       this.snake.some((segment) => segment.x === head.x && segment.y === head.y)
     ) {
@@ -88,7 +86,6 @@ export class SnakeService {
 
     this.snake.unshift(head);
 
-    // Проверка поедания еды
     if (head.x === this.food.x && head.y === this.food.y) {
       this.score$.next(this.score$.value + 1);
       this.generateFood();

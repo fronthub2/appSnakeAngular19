@@ -16,7 +16,7 @@ import {
   take,
   takeUntil,
   tap,
-  withLatestFrom
+  withLatestFrom,
 } from 'rxjs';
 import {
   IUser,
@@ -118,7 +118,7 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
     if (this.isGameRunning) return;
     this.isGameRunning = true;
     this.countdown = 3;
-    
+
     interval(1000)
       .pipe(
         take(4),
@@ -179,12 +179,8 @@ export class SnakeBoardComponent implements OnInit, OnDestroy {
         take(1),
         tap((score) => {
           if (score === 0 || !this.user) return;
-          try {
-            this.user.score.push(score);
-            this.lsService.setUser(this.user);
-          } catch (e) {
-            console.error('Ошибка с сохранением score>> ', e);
-          }
+          this.user.score.push(score);
+          this.lsService.setUser(this.user);
         })
       )
       .subscribe();
